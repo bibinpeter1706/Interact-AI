@@ -8,11 +8,11 @@ import { CheckCircle2, X, Zap, Server, Activity } from "lucide-react";
 const plans = [
   {
     name: "Starter",
-    priceMonthly: "4,999",
-    priceAnnual: "3,999",
-    desc: "Perfect for small businesses launching their first AI agent on one channel.",
+    priceMonthly: "1,999",
+    priceAnnual: "18,000",
+    desc: "For small businesses getting started.",
     features: [
-      "1 AI Agent (Voice or WhatsApp)",
+      "2 AI Chat Agents (WhatsApp)",
       "500 conversations/month",
       "Basic analytics dashboard",
       "Email support",
@@ -22,12 +22,30 @@ const plans = [
   },
   {
     name: "Growth",
-    priceMonthly: "12,999",
-    priceAnnual: "10,399",
-    desc: "For growing teams that need multi-channel AI with advanced customisation.",
+    priceMonthly: "3,999",
+    priceAnnual: "36,000",
+    desc: "For growing teams across channels.",
     popular: true,
     features: [
-      "3 AI Agents (All channels)",
+      "3 AI Chat Agents (WhatsApp)",
+      "3 Voice Agents",
+      "5,000 conversations/month",
+      "Advanced analytics & exports",
+      "Priority chat & email support",
+      "15+ premium integrations",
+      "Custom training on your data",
+      "English, Hindi, Malayalam",
+    ],
+    disabled: ["Dedicated success manager"],
+  },
+  {
+    name: "Pro",
+    priceMonthly: "7,499",
+    priceAnnual: "75,000",
+    desc: "For high-volume chat and voice.",
+    features: [
+      "5 AI Chat Agents (WhatsApp)",
+      "5 Voice Agents",
       "5,000 conversations/month",
       "Advanced analytics & exports",
       "Priority chat & email support",
@@ -41,7 +59,7 @@ const plans = [
     name: "Enterprise",
     priceMonthly: "Custom",
     priceAnnual: "Custom",
-    desc: "For enterprises needing unlimited scale, SLAs, custom integrations and white-labelling.",
+    desc: "For tailored enterprise deployments.",
     features: [
       "Unlimited AI agents",
       "Unlimited conversations",
@@ -66,6 +84,23 @@ const PricingGlow = () => (
 
 export default function Pricing() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState("Growth");
+
+  const comparisonRows: { label: string; values: (string | boolean)[] }[] = [
+    {
+      label: isAnnual ? "Annual price" : "Monthly price",
+      values: plans.map((plan) => plan.priceMonthly === "Custom" ? "Custom" : `₹${isAnnual ? plan.priceAnnual : plan.priceMonthly}`),
+    },
+    { label: "AI Chat Agents (WhatsApp)", values: ["2", "3", "5", "Unlimited"] },
+    { label: "Voice Agents", values: [false, "3", "5", "Unlimited"] },
+    { label: "Conversations", values: ["500/month", "5,000/month", "5,000/month", "Unlimited"] },
+    { label: "Analytics", values: ["Basic", "Advanced", "Advanced", "Custom"] },
+    { label: "Support", values: ["Email", "Priority chat & email", "Priority chat & email", "24/7 dedicated"] },
+    { label: "Premium integrations", values: ["2 essential", "15+", "15+", "Unlimited"] },
+    { label: "Custom training", values: [false, true, true, true] },
+    { label: "Multi-language support", values: [false, true, true, true] },
+    { label: "Dedicated success manager", values: [false, false, false, true] },
+  ];
 
   return (
     <section id="pricing" className="relative z-10 py-32 px-[5vw] overflow-hidden bg-transparent">
@@ -141,24 +176,95 @@ export default function Pricing() {
               )}
               Annually
               <span className={`relative z-10 text-[0.65rem] px-2.5 py-1 rounded-full font-bold uppercase tracking-wide transition-colors ${isAnnual ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 shadow-[0_0_10px_rgba(250,204,21,0.2)]" : "bg-white/[0.05] text-gray-400 border border-white/10"}`}>
-                Save 20%
+                Annual billing
               </span>
             </button>
           </div>
         </div>
 
-        {/* Pricing Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-6 perspective-[2000px] items-center">
+        {/* Classic Netflix-style plan comparison */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55 }}
+          className="hidden"
+        >
+          <div className="min-w-[800px] overflow-hidden bg-white">
+            <div className="grid grid-cols-[minmax(190px,1.45fr)_repeat(4,minmax(135px,1fr))] bg-[#f7f7f7] px-6 pt-7">
+              <div className="flex items-end pb-4 text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-gray-400">Choose a plan</div>
+              {plans.map((plan) => {
+                const isSelected = selectedPlan === plan.name;
+                return (
+                  <button
+                    key={plan.name}
+                    type="button"
+                    onClick={() => setSelectedPlan(plan.name)}
+                    aria-pressed={isSelected}
+                    className={`relative mx-2 mb-4 h-[78px] rounded-sm text-[0.82rem] font-bold transition-all duration-200 ${
+                      isSelected
+                        ? "bg-[#e50914] text-white shadow-lg after:absolute after:-bottom-3 after:left-1/2 after:-translate-x-1/2 after:border-x-[10px] after:border-x-transparent after:border-t-[10px] after:border-t-[#e50914]"
+                        : "bg-[#f5767b] text-white/90 hover:bg-[#ef6369]"
+                    }`}
+                  >
+                    {plan.name}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="grid grid-cols-[minmax(190px,1.45fr)_repeat(4,minmax(135px,1fr))] px-6 text-[0.9rem]">
+              {comparisonRows.map((row) => (
+                <div key={row.label} className="contents">
+                  <div className="border-t border-gray-200 py-4 pr-5 font-medium text-gray-700">{row.label}</div>
+                  {row.values.map((value, index) => {
+                    const isSelected = selectedPlan === plans[index].name;
+                    return (
+                      <div key={`${row.label}-${plans[index].name}`} className={`flex items-center justify-center border-t border-gray-200 py-4 text-center font-medium ${isSelected ? "bg-red-50 text-[#d30a15]" : "text-gray-600"}`}>
+                        {typeof value === "boolean"
+                          ? value
+                            ? <CheckCircle2 className="h-5 w-5 text-[#e50914]" aria-label="Included" />
+                            : <X className="h-5 w-5 text-gray-400" aria-label="Not included" />
+                          : value}
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-[minmax(190px,1.45fr)_repeat(4,minmax(135px,1fr))] px-6 pb-7">
+              <div className="border-t border-gray-200" />
+              {plans.map((plan) => {
+                const isSelected = selectedPlan === plan.name;
+                return (
+                  <div key={`cta-${plan.name}`} className={`flex justify-center border-t border-gray-200 pt-5 ${isSelected ? "bg-red-50" : ""}`}>
+                    <Link
+                      href="#contact"
+                      className={`rounded-md px-4 py-2.5 text-[0.8rem] font-bold transition-colors ${
+                        isSelected ? "bg-[#e50914] text-white hover:bg-[#c40812]" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      {plan.priceMonthly === "Custom" ? "Contact us" : "Select"}
+                    </Link>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 perspective-[2000px] items-stretch">
           {plans.map((plan, index) => {
             const isPopular = plan.popular;
             return (
               <motion.div
                 key={plan.name}
-                initial={{ opacity: 0, y: 30, rotateY: index === 0 ? 5 : index === 2 ? -5 : 0 }}
+                initial={{ opacity: 0, y: 30, rotateY: index % 2 === 0 ? 4 : -4 }}
                 whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.7, delay: index * 0.1, type: "spring", bounce: 0.3 }}
-                className={`relative bg-white/[0.02] backdrop-blur-3xl border rounded-[32px] p-[3rem_2.5rem] flex flex-col transition-all duration-500 group
+                className={`relative bg-white/[0.02] backdrop-blur-3xl border rounded-[32px] p-8 flex flex-col transition-all duration-500 group
                   ${isPopular 
                     ? "border-yellow-500/30 lg:scale-105 z-20 shadow-[0_30px_80px_-20px_rgba(250,204,21,0.15),inset_0_0_0_1px_rgba(250,204,21,0.1)] hover:shadow-[0_40px_100px_-20px_rgba(250,204,21,0.25)] hover:border-yellow-500/50" 
                     : "border-white/[0.05] z-10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5),inset_0_0_0_1px_rgba(255,255,255,0.02)] hover:border-white/[0.15] hover:bg-white/[0.03] hover:-translate-y-2"}
@@ -190,7 +296,11 @@ export default function Pricing() {
                 </div>
                 
                 <div className="text-[0.9rem] text-gray-500 mb-8 font-medium relative z-20">
-                  per month · billed {isAnnual ? "annually" : "monthly"}
+                  {plan.priceMonthly === "Custom"
+                    ? "Tailored to your requirements"
+                    : isAnnual
+                      ? "per year · billed annually"
+                      : "per month · billed monthly"}
                 </div>
                 
                 <p className="text-[0.95rem] text-gray-400 leading-[1.6] mb-8 pb-8 border-b border-white/[0.08] font-medium relative z-20">

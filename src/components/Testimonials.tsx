@@ -5,27 +5,27 @@ import { Quote, TrendingDown, Zap, Building2, Star } from "lucide-react";
 
 const testimonials = [
   {
-    quote: "InteractAI didn't just improve our support—it entirely reinvented it. We deployed their voice agents across all our international lines. Wait times vanished, our CSAT scores hit an all-time high, and we immediately saw a 40% reduction in operational costs. It feels like having a thousand expert agents working simultaneously.",
-    author: "Sarah Jenkins",
-    role: "VP of Operations, TechFlow",
+    quote: "Our WhatsApp and voice queries are now handled even after business hours. The team has more time to focus on customers who really need help, and our support cost came down by nearly 40%.",
+    author: "Anjali Menon",
+    role: "Operations Head, KochiCart",
     featured: true,
-    initials: "SJ",
+    initials: "AM",
     gradient: "from-yellow-400 to-yellow-600",
   },
   {
-    quote: "The API integration was flawless. Within 48 hours, we had an AI voice agent booking appointments directly into our CRM. The latency is practically zero—it sounds indistinguishable from a human.",
-    author: "David Chen",
-    role: "CTO, HealthSync",
+    quote: "We set up the voice agent quickly and it started booking appointments directly in our CRM. Customers found it simple to use, and our front desk is much less busy now.",
+    author: "Rahul Nair",
+    role: "Director, Malabar Care",
     featured: false,
-    initials: "DC",
+    initials: "RN",
     gradient: "from-blue-400 to-emerald-500",
   },
   {
-    quote: "Our conversion rates jumped 32% after implementing the WhatsApp AI assistant. It answers complex product queries instantly and drives sales 24/7. An absolute game-changer.",
-    author: "Elena Rodriguez",
-    role: "Director of E-commerce, StyleHouse",
+    quote: "The WhatsApp assistant answers product questions instantly, even during peak sale days. We are seeing more completed orders without adding more people to the support team.",
+    author: "Priya Shah",
+    role: "Founder, Casa Trends",
     featured: false,
-    initials: "ER",
+    initials: "PS",
     gradient: "from-purple-400 to-pink-500",
   },
 ];
@@ -60,7 +60,7 @@ export default function Testimonials() {
           
           <h2 className="font-syne text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold tracking-tight leading-[1.05] mb-6 text-white">
             Don't just take <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 drop-shadow-[0_0_30px_rgba(250,204,21,0.2)]">our word for it.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 drop-shadow-[0_0_30px_rgba(250,204,21,0.2)]">our word for it</span>
           </h2>
           <p className="text-gray-400 text-[1.15rem] leading-[1.6] font-medium max-w-[560px]">
             See how industry leaders are leveraging our AI agents to cut costs, increase sales, and scale operations overnight.

@@ -71,7 +71,7 @@ export default function Hero() {
           className="relative h-[clamp(5rem,12vw,10rem)] w-full max-w-[900px] mx-auto"
         >
           <TextPressure
-            text="Interacts."
+            text="Speaks Business"
             flex={true}
             alpha={false}
             stroke={false}
@@ -91,7 +91,7 @@ export default function Hero() {
         transition={{ duration: 0.8, delay: 0.25 }}
         className="relative z-10 font-general font-medium text-[clamp(1.1rem,1.8vw,1.4rem)] text-mint-muted/80 tracking-[0.03em] max-w-[600px] leading-[1.6] mb-12 text-center antialiased -translate-y-8"
       >
-        Intelligent voice and chat agents that think, speak, and solve in real-time.
+        Intelligent voice and chat agents that listens, responds and &amp; gets things done.
       </motion.p>
 
       <motion.div

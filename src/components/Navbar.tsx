@@ -51,12 +51,6 @@ export default function Navbar() {
         </ul>
 
         <div className="flex items-center gap-4">
-          <Link
-            href="#contact"
-            className="hidden md:block bg-gold text-bg2 font-syne font-bold text-[0.85rem] px-[22px] py-[10px] rounded-[8px] tracking-wide hover:bg-gold-hover hover:-translate-y-px transition-all"
-          >
-            Try Demo →
-          </Link>
           <button
             className="md:hidden text-cream text-[1.5rem]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { 
-  ShoppingCart, Hotel, Building, Landmark,
+  ShoppingCart, Building, ConciergeBell,
   CheckCircle2, Zap, TrendingUp, Sparkles, 
-  Send, ShieldCheck, Activity, Users, 
+  Send, Activity, Users,
   Network
 } from "lucide-react";
 import DoodleBackground from "./DoodleBackground";
@@ -37,30 +37,6 @@ const useCases = [
     ],
   },
   {
-    id: "hospitality",
-    label: "Hospitality",
-    icon: Hotel,
-    bgGlow: "radial-gradient(circle at 80% 50%, rgba(250,204,21,0.1), transparent 50%)",
-    title: "Elevate Guest Experience",
-    desc: "Automate room bookings, answer concierge queries, and coordinate check-in/out instructions instantly. Deliver a 5-star experience 24/7.",
-    outcomes: [
-      "Instant room service booking",
-      "Automated check-in guides",
-      "24/7 guest support & FAQs"
-    ],
-    metrics: [
-      { label: "Guest Satisfaction", value: "96%", icon: Sparkles, pos: "-left-16 top-16", delay: 0.2 },
-      { label: "Response Time", value: "<10s", icon: Zap, pos: "-right-12 bottom-32", delay: 0.4 }
-    ],
-    chat: [
-      { sender: "HotelBot", msg: "Welcome to Grand Plaza! How can I assist you today? 🛎️", type: "bot" },
-      { sender: "Guest", msg: "Can I get late check-out tomorrow?", type: "user" },
-      { sender: "HotelBot", msg: "Let me check. Yes! I've extended your check-out to 2:00 PM free of charge. 😊", type: "bot" },
-      { sender: "Guest", msg: "Awesome, thanks!", type: "user" },
-      { sender: "HotelBot", msg: "My pleasure! Enjoy your evening.", type: "bot" },
-    ],
-  },
-  {
     id: "realestate",
     label: "Real Estate",
     icon: Building,
@@ -85,27 +61,27 @@ const useCases = [
     ],
   },
   {
-    id: "banking",
-    label: "Banking",
-    icon: Landmark,
-    bgGlow: "radial-gradient(circle at 80% 50%, rgba(59,130,246,0.1), transparent 50%)",
-    title: "Secure & Instant Banking",
-    desc: "Deliver secure, personalized assistance for balance inquiries, card activation, and loan qualification with bank-grade security.",
+    id: "resort",
+    label: "Front Desk",
+    icon: ConciergeBell,
+    bgGlow: "radial-gradient(circle at 80% 50%, rgba(16,185,129,0.12), transparent 50%)",
+    title: "Your 24/7 Front Desk",
+    desc: "Welcome guests, manage stay requests, and answer resort questions any time of day.",
     outcomes: [
-      "Instant balance check & reports",
-      "Automated card freeze/unfreeze",
-      "Quick loan eligibility check"
+      "Early check-in & check-out requests",
+      "Airport pickup coordination",
+      "Instant guest support & local tips"
     ],
     metrics: [
-      { label: "Cost Per Contact", value: "-60%", icon: Zap, pos: "-left-14 top-16", delay: 0.2 },
-      { label: "Secured Transactions", value: "100%", icon: ShieldCheck, pos: "-right-10 bottom-24", delay: 0.4 }
+      { label: "Guest Satisfaction", value: "96%", icon: Sparkles, pos: "-left-14 top-16", delay: 0.2 },
+      { label: "Response Time", value: "<10s", icon: Zap, pos: "-right-10 bottom-24", delay: 0.4 }
     ],
     chat: [
-      { sender: "BankBot", msg: "Hello! Please authenticate using OTP to access your account services. 🔒", type: "bot" },
-      { sender: "Customer", msg: "I lost my credit card. Can you freeze it?", type: "user" },
-      { sender: "BankBot", msg: "I can help with that immediately. Please confirm the last 4 digits (e.g., 4321).", type: "bot" },
-      { sender: "Customer", msg: "9876", type: "user" },
-      { sender: "BankBot", msg: "✅ Your card ending in 9876 has been frozen. A replacement card is on the way!", type: "bot" },
+      { sender: "ResortBot", msg: "Welcome to Coconut Grove Resort. How may I assist you today?", type: "bot" },
+      { sender: "Guest", msg: "We are arriving at 11 AM. Can we request an early check-in?", type: "user" },
+      { sender: "ResortBot", msg: "Certainly. I have noted your request and will update you as soon as your room is ready.", type: "bot" },
+      { sender: "Guest", msg: "Thank you. We also need an airport pickup.", type: "user" },
+      { sender: "ResortBot", msg: "Your airport pickup is confirmed for 10:30 AM. Our driver will meet you at the arrivals gate.", type: "bot" },
     ],
   },
 ];
@@ -144,7 +120,13 @@ const NeuralBackground = () => (
   </div>
 );
 
-function ChatDemoMessages({ activeCase }: { activeCase: typeof useCases[0] }) {
+type ChatMessage = {
+  sender: string;
+  msg: string;
+  type: "bot" | "user";
+};
+
+function ChatDemoMessages({ activeCase, messages, isReplying }: { activeCase: typeof useCases[0]; messages: ChatMessage[]; isReplying: boolean }) {
   const [visibleCount, setVisibleCount] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -185,16 +167,22 @@ function ChatDemoMessages({ activeCase }: { activeCase: typeof useCases[0] }) {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [visibleCount, isTyping]);
+  }, [visibleCount, isTyping, messages, isReplying]);
+
+  const visibleMessages = [...activeCase.chat.slice(0, visibleCount), ...messages];
 
   return (
-    <div ref={scrollRef} className="flex-1 p-6 lg:p-8 overflow-y-auto flex flex-col gap-6 custom-scrollbar scroll-smooth">
+    <div
+      ref={scrollRef}
+      data-lenis-prevent
+      className="min-h-0 flex-1 p-6 lg:p-8 overflow-y-auto overscroll-contain flex flex-col gap-6 custom-scrollbar scroll-smooth"
+    >
       <AnimatePresence>
-        {activeCase.chat.slice(0, visibleCount).map((msg, idx) => {
+        {visibleMessages.map((msg, idx) => {
           const isBot = msg.type === "bot";
           return (
             <motion.div
-              key={activeCase.id + idx}
+              key={`${activeCase.id}-${idx}-${msg.msg}`}
               initial={{ opacity: 0, y: 15, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{ type: "spring", bounce: 0.4, duration: 0.6 }}
@@ -228,7 +216,7 @@ function ChatDemoMessages({ activeCase }: { activeCase: typeof useCases[0] }) {
         })}
       </AnimatePresence>
 
-      {isTyping && (
+      {(isTyping || isReplying) && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -252,8 +240,50 @@ function ChatDemoMessages({ activeCase }: { activeCase: typeof useCases[0] }) {
 
 export default function Solutions() {
   const [activeTab, setActiveTab] = useState(useCases[0].id);
+  const [chatInput, setChatInput] = useState("");
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [isChatReplying, setIsChatReplying] = useState(false);
+  const replyTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const activeCase = useCases.find((uc) => uc.id === activeTab)!;
   const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (replyTimeoutRef.current) clearTimeout(replyTimeoutRef.current);
+    };
+  }, []);
+
+  const handleTabChange = (tabId: string) => {
+    if (replyTimeoutRef.current) clearTimeout(replyTimeoutRef.current);
+    setActiveTab(tabId);
+    setChatInput("");
+    setChatMessages([]);
+    setIsChatReplying(false);
+  };
+
+  const handleChatSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const question = chatInput.trim();
+    if (!question || isChatReplying) return;
+
+    const botName = activeCase.chat.find((message) => message.type === "bot")?.sender || "AI Agent";
+    setChatMessages((messages) => [...messages, { sender: "You", msg: question, type: "user" }]);
+    setChatInput("");
+    setIsChatReplying(true);
+
+    replyTimeoutRef.current = setTimeout(() => {
+      setChatMessages((messages) => [
+        ...messages,
+        {
+          sender: botName,
+          msg: `Thanks for your message. I can help with ${activeCase.outcomes[0].toLowerCase()}—what details can I check for you?`,
+          type: "bot",
+        },
+      ]);
+      setIsChatReplying(false);
+      replyTimeoutRef.current = null;
+    }, 800);
+  };
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -320,7 +350,7 @@ export default function Solutions() {
             return (
               <button
                 key={uc.id}
-                onClick={() => setActiveTab(uc.id)}
+                onClick={() => handleTabChange(uc.id)}
                 className={`relative px-8 py-3 rounded-full flex items-center gap-2.5 text-[0.95rem] font-semibold transition-all duration-300 z-10 ${
                   isActive ? "text-white" : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
                 }`}
@@ -430,23 +460,31 @@ export default function Solutions() {
               </div>
 
               {/* Chat Messages Area */}
-              <div className="flex-1 relative bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.4)_0%,transparent_100%)] overflow-hidden flex flex-col">
-                <ChatDemoMessages activeCase={activeCase} />
+              <div className="whatsapp-chat-wallpaper min-h-0 flex-1 relative overflow-hidden flex flex-col">
+                <ChatDemoMessages activeCase={activeCase} messages={chatMessages} isReplying={isChatReplying} />
               </div>
 
               {/* Input Field */}
               <div className="p-5 px-6 border-t border-white/50 bg-white/60 backdrop-blur-md">
-                <div className="bg-white border border-gray-200 rounded-full pl-6 pr-2 py-2 flex items-center gap-3 shadow-sm transition-all hover:border-gray-300 focus-within:border-yellow-400 focus-within:ring-4 focus-within:ring-yellow-400/10">
+                <form onSubmit={handleChatSubmit} className="bg-white border border-gray-200 rounded-full pl-6 pr-2 py-2 flex items-center gap-3 shadow-sm transition-all hover:border-gray-300 focus-within:border-yellow-400 focus-within:ring-4 focus-within:ring-yellow-400/10">
                   <input 
                     type="text" 
-                    placeholder="Ask the AI agent..." 
+                    placeholder={chatMessages.length > 0 ? "Message" : "Try Demo"}
                     className="bg-transparent border-none outline-none flex-1 text-[1rem] text-gray-800 placeholder:text-gray-400 font-medium"
-                    disabled
+                    value={chatInput}
+                    onChange={(event) => setChatInput(event.target.value)}
+                    disabled={isChatReplying}
+                    aria-label="Message the AI agent"
                   />
-                  <button className="bg-gray-900 p-3 rounded-full text-white hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 shadow-md">
+                  <button
+                    type="submit"
+                    disabled={!chatInput.trim() || isChatReplying}
+                    aria-label="Send message"
+                    className="bg-gray-900 p-3 rounded-full text-white hover:bg-gray-800 transition-all hover:scale-105 active:scale-95 shadow-md disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+                  >
                     <Send className="w-4 h-4 ml-0.5" />
                   </button>
-                </div>
+                </form>
               </div>
             </motion.div>
 
